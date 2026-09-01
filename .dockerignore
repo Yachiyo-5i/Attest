@@ -1,0 +1,17 @@
+# 构建缓存与本地产物不进镜像
+**/node_modules
+**/dist
+**/__pycache__
+**/*.pyc
+**/.venv
+**/.pytest_cache
+
+# 本地数据与密钥
+data/
+.env
+.env.*
+
+# 文档与版本控制
+.git
+.gitignore
+*.md

@@ -1,0 +1,18 @@
+{
+  "release-type": "python",
+  "packages": {
+    ".": {
+      "package-name": "attest",
+      "release-type": "python",
+      "bump-minor-pre-major": true,
+      "bump-patch-for-minor-pre-major": true,
+      "draft": false,
+      "prerelease": false,
+      "changelog-path": "CHANGELOG.md",
+      "extra-files": [
+        "frontend/package.json",
+        "README.md"
+      ]
+    }
+  }
+}

@@ -1,0 +1,56 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  /* 品牌与界面基调：深色侧栏 + 蓝色主色 + 浅灰工作区 */
+  --color-ink-950: #101a30;
+  --color-ink-900: #121d37;
+  --color-ink-800: #17233c;
+  --color-ink-700: #1d2a47;
+  --color-ink-600: #22355b;
+  --color-ink-400: #667794;
+  --color-ink-300: #7f90af;
+  --color-ink-200: #a9b7cc;
+  --color-ink-100: #c3cee1;
+
+  --color-accent-700: #2c4bc7;
+  --color-accent-600: #3658df;
+  --color-accent-500: #5271f4;
+  --color-accent-400: #627cff;
+  --color-accent-100: #dfe8ff;
+  --color-accent-50: #f1f5ff;
+
+  --color-success-700: #0a7d56;
+  --color-success-600: #14895f;
+  --color-success-100: #e8f8f1;
+
+  --color-warning-700: #a26500;
+  --color-warning-100: #fff4dc;
+
+  --color-danger-700: #b42318;
+  --color-danger-100: #fff0ef;
+  --color-danger-200: #ffd8d5;
+
+  --color-surface: #ffffff;
+  --color-canvas: #f6f7fb;
+  --color-line: #e1e5ed;
+  --color-line-soft: #edf0f4;
+
+  --color-body: #15213a;
+  --color-muted: #6e7d94;
+  --color-faint: #8a96a9;
+}
+
+body {
+  @apply bg-canvas text-body antialiased;
+}
+
+/* 全局隐藏滚动条（滚动功能保留），避免滚动条出现/消失导致内容位移 */
+* {
+  scrollbar-width: none;
+}
+*::-webkit-scrollbar {
+  display: none;
+}

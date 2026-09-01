@@ -1,0 +1,18 @@
+services:
+  attest:
+    image: yachiiiiyo/attest:latest
+    container_name: attest
+    ports:
+      - "8321:8321"
+    environment:
+      # 登录密码，部署时修改；也可改用 ATTEST_AUTH_PASSWORD_HASH 注入 Argon2id 哈希
+      ATTEST_AUTH_PASSWORD: ${ATTEST_AUTH_PASSWORD:-dev-password}
+    volumes:
+      # 唯一需要持久化的目录：SQLite 数据库、基线与报告数据
+      - ./data:/data
+    restart: unless-stopped
+    healthcheck:
+      test: curl -f http://127.0.0.1:8321/healthz
+      interval: 30s
+      timeout: 5s
+      retries: 3
