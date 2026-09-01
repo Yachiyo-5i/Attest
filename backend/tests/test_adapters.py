@@ -1,8 +1,10 @@
+import asyncio
+
 import httpx
 import pytest
 import respx
 
-from attest.adapters import generate
+from attest.adapters import RATE_LIMIT_MAX_RETRIES, generate
 
 
 @pytest.mark.asyncio
@@ -34,3 +36,33 @@ async def test_responses_extracts_nested_output_text():
     result = await generate("openai_responses", "https://gateway.test", "key", "m", "choose")
     assert route.called
     assert result.text == "7"
+
+
+@pytest.mark.asyncio
+@respx.mock
+async def test_rate_limit_waits_and_retries(monkeypatch):
+    sleeps: list[float] = []
+
+    async def fake_sleep(seconds: float) -> None:
+        sleeps.append(seconds)
+
+    monkeypatch.setattr(asyncio, "sleep", fake_sleep)
+    ok = httpx.Response(200, json={"id": "r4", "model": "m", "choices": [{"message": {"content": "7"}, "finish_reason": "stop"}], "usage": {}})
+    route = respx.post("https://gateway.test/v1/chat/completions").mock(side_effect=[httpx.Response(429, headers={"retry-after": "2"}), httpx.Response(429), ok])
+    result = await generate("openai_chat_completions", "https://gateway.test", "key", "m", "choose")
+    assert result.text == "7"
+    assert route.call_count == 3
+    assert sleeps == [2.0, 2.0]  # 第一次按 Retry-After，第二次指数退避
+
+
+@pytest.mark.asyncio
+@respx.mock
+async def test_rate_limit_gives_up_after_max_retries(monkeypatch):
+    async def fake_sleep(seconds: float) -> None:
+        return None
+
+    monkeypatch.setattr(asyncio, "sleep", fake_sleep)
+    route = respx.post("https://gateway.test/v1/chat/completions").mock(return_value=httpx.Response(429))
+    with pytest.raises(httpx.HTTPStatusError):
+        await generate("openai_chat_completions", "https://gateway.test", "key", "m", "choose")
+    assert route.call_count == RATE_LIMIT_MAX_RETRIES + 1

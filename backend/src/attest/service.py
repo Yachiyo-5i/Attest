@@ -10,6 +10,7 @@ import httpx
 
 from .adapters import generate
 from .catalog import get_model
+from .config import settings
 from .normalize import NORMALIZATION_LABELS, normalize_answer
 from .statistics import bootstrap_jsd, distribution, jsd
 from .storage import json_dumps, json_loads, session, utc_now
@@ -273,6 +274,9 @@ async def run_enrollment(run_id: str, model_id: str, protocol: str, gateway: dic
             current = get_run(run_id)
             if current and current["status"] == "cancelled":
                 return
+            # 请求间隔，避免触发上游 RPM 限流
+            if index and settings.request_interval_seconds > 0:
+                await asyncio.sleep(settings.request_interval_seconds)
             cell, prompt = choose_probe(index)
             try:
                 response = await generate(protocol, gateway["base_url"], gateway["api_key"], model["api_model_id"], prompt, "只输出最终答案。" if protocol != "openai_responses" else None, gateway["routes"].get(protocol, {}).get("path"))
@@ -329,6 +333,9 @@ async def run_audit(run_id: str, profile: dict, suspect: dict, sample_count: int
             current = get_run(run_id)
             if current and current["status"] == "cancelled":
                 return
+            # 请求间隔，避免触发上游 RPM 限流
+            if index and settings.request_interval_seconds > 0:
+                await asyncio.sleep(settings.request_interval_seconds)
             cell, prompt = choose_probe(index)
             try:
                 response = await generate(profile["protocol"], suspect["base_url"], suspect["api_key"], suspect.get("model_id") or model["api_model_id"], prompt, "只输出最终答案。" if profile["protocol"] != "openai_responses" else None, suspect.get("path"))
