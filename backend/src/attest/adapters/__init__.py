@@ -1,11 +1,27 @@
 from __future__ import annotations
 
+import asyncio
 import hashlib
 import time
 from dataclasses import dataclass
 from typing import Any
 
 import httpx
+
+# 429 视为限流而非错误：等待后重试，次数有上限避免无限挂起
+RATE_LIMIT_MAX_RETRIES = 6
+RATE_LIMIT_BASE_DELAY = 1.0
+RATE_LIMIT_MAX_DELAY = 30.0
+
+
+def _retry_after_seconds(response: httpx.Response) -> float | None:
+    value = response.headers.get("retry-after")
+    if not value:
+        return None
+    try:
+        return min(max(0.0, float(value)), RATE_LIMIT_MAX_DELAY)
+    except ValueError:
+        return None
 
 
 @dataclass(frozen=True)
@@ -54,11 +70,14 @@ async def generate(protocol: str, base_url: str, api_key: str, model_id: str, pr
     else:
         raise ValueError(f"unsupported protocol: {protocol}")
     headers.update(extra_headers or {})
-    started = time.perf_counter()
     raw: dict[str, Any] = {}
     content = b""
-    # 中转链路抖动/超时较常见：超时与连接错误自动重试一次，429/4xx 等响应错误不重试
-    for attempt in range(2):
+    # 中转链路抖动/超时较常见：超时与连接错误自动重试一次；
+    # 429 是限流而非错误：按 Retry-After 或指数退避等待后重试，且不占用超时重试次数
+    transport_retried = False
+    rate_limit_retries = 0
+    while True:
+        started = time.perf_counter()  # 每次尝试重新计时，429 等待不计入延迟统计
         try:
             async with httpx.AsyncClient(timeout=httpx.Timeout(120.0, connect=15.0)) as client:
                 response = await client.post(endpoint(base_url, path or default_path), json=payload, headers=headers)
@@ -66,9 +85,19 @@ async def generate(protocol: str, base_url: str, api_key: str, model_id: str, pr
                 raw = response.json()
                 content = response.content
             break
+        except httpx.HTTPStatusError as exc:
+            if exc.response.status_code == 429 and rate_limit_retries < RATE_LIMIT_MAX_RETRIES:
+                rate_limit_retries += 1
+                delay = _retry_after_seconds(exc.response)
+                if delay is None:
+                    delay = min(RATE_LIMIT_BASE_DELAY * 2 ** (rate_limit_retries - 1), RATE_LIMIT_MAX_DELAY)
+                await asyncio.sleep(delay)
+                continue
+            raise
         except (httpx.TimeoutException, httpx.TransportError):
-            if attempt == 1:
+            if transport_retried:
                 raise
+            transport_retried = True
     latency_ms = int((time.perf_counter() - started) * 1000)
     if protocol == "openai_responses":
         text = raw.get("output_text") or _text_from_content(raw.get("output"))
