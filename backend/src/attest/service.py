@@ -373,6 +373,24 @@ async def run_audit(run_id: str, profile: dict, suspect: dict, sample_count: int
 
         aggregate = round(sum(distances) / len(distances), 6) if len(distances) == len(BATTERY) else None
         threshold = profile["threshold"]
+
+        # 逐 cell 信号：聚合均值会被退化 cell（如基线为 {"7": 1.0}）稀释，
+        # 因此单个 cell 的显著偏离必须能独立影响裁决。
+        comparable = [c for c in cell_results if c["status"] == "comparable"]
+        # 点估计或 CI 下界达到 mismatch 阈值 → 该 cell 单独即可否决一致性
+        mismatch_cells = [
+            c["cell_id"]
+            for c in comparable
+            if c["jsd"] >= threshold["mismatch_threshold"] or c["ci_95"]["lower"] >= threshold["mismatch_threshold"]
+        ]
+        # CI 下界超过 match 阈值 → 该 cell 存在统计上显著的偏离，但还够不上 mismatch；
+        # 此类 cell 存在时不能给出 CONSISTENT 结论
+        deviating_cells = [
+            c["cell_id"]
+            for c in comparable
+            if c["cell_id"] not in mismatch_cells and c["ci_95"]["lower"] > threshold["match_threshold"]
+        ]
+
         reasons: list[dict[str, Any]] = []
         if unavailable_cells:
             reasons.append({"code": "insufficient_comparable_cells", "message": f"{len(unavailable_cells)} 个 Probe Cell 没有足够的可比较样本。", "cells": unavailable_cells})
@@ -385,7 +403,12 @@ async def run_audit(run_id: str, profile: dict, suspect: dict, sample_count: int
             verdict = "INCONCLUSIVE"
             title = "证据不足，无法比较"
             conclusion = "待测响应、参考基线或请求预算不满足统计比较条件。"
-        elif aggregate is not None and aggregate <= threshold["match_threshold"]:
+        elif mismatch_cells:
+            verdict = "INCOMPATIBLE_WITH_REFERENCE"
+            title = "行为分布与参考基线不兼容"
+            conclusion = "个别检查项的回答分布与参考基线存在显著统计差异，即使聚合距离未达阈值。"
+            reasons.append({"code": "cell_mismatch_veto", "message": f"{len(mismatch_cells)} 个 Probe Cell 的统计距离单独达到不兼容阈值。", "cells": mismatch_cells})
+        elif aggregate is not None and aggregate <= threshold["match_threshold"] and not deviating_cells:
             verdict = "CONSISTENT_WITH_REFERENCE"
             title = "行为分布与参考基线一致"
             conclusion = "在当前 Probe Battery、协议与样本预算下，未发现待测端点与参考基线的统计不一致。"
@@ -396,7 +419,9 @@ async def run_audit(run_id: str, profile: dict, suspect: dict, sample_count: int
         else:
             verdict = "INCONCLUSIVE"
             title = "统计距离处于不确定区间"
-            conclusion = "已获得可比较样本，但聚合距离没有达到一致或不兼容阈值。"
+            conclusion = "已获得可比较样本，但聚合距离或个别检查项的偏离没有达到一致或不兼容阈值。"
+            if deviating_cells:
+                reasons.append({"code": "cell_significant_deviation", "message": f"{len(deviating_cells)} 个 Probe Cell 存在统计上显著的偏离，建议增加采样次数后重新检验。", "cells": deviating_cells})
 
         result = {
             "verdict": verdict,
