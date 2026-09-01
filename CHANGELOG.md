@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.2](https://github.com/Yachiyo-5i/Attest/compare/v0.1.1...v0.1.2) (2026-09-01)
+
+
+### Bug Fixes
+
+* disable thinking on anthropic_messages to avoid empty text ([65ab12d](https://github.com/Yachiyo-5i/Attest/commit/65ab12df14ebbf3722259a3db9004aefedd498d8))
+
 ## [0.1.1](https://github.com/Yachiyo-5i/Attest/compare/v0.1.0...v0.1.1) (2026-09-01)
 
 
