@@ -1,4 +1,5 @@
 import asyncio
+import json
 
 import httpx
 import pytest
@@ -25,6 +26,8 @@ async def test_anthropic_messages_payload_and_response():
     result = await generate("anthropic_messages", "https://gateway.test", "key", "m", "flip")
     assert route.called
     assert route.calls[0].request.headers["x-api-key"] == "key"
+    # 探测关闭 thinking，避免推理块耗尽 max_tokens 导致 text 缺失
+    assert json.loads(route.calls[0].request.content)["thinking"] == {"type": "disabled"}
     assert result.text == "heads"
     assert result.finish_reason == "end_turn"
 

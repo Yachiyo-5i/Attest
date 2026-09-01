@@ -64,7 +64,9 @@ async def generate(protocol: str, base_url: str, api_key: str, model_id: str, pr
         default_path = "/v1/chat/completions"
         headers = {"Authorization": f"Bearer {api_key}"}
     elif protocol == "anthropic_messages":
-        payload = {"model": model_id, "max_tokens": 32, "temperature": 1.0, "top_p": 1.0, "system": system_prompt or "", "messages": [{"role": "user", "content": prompt}], "stream": False}
+        # 显式关闭 thinking：国模 Anthropic 兼容端点常默认开启推理，
+        # max_tokens=32 会被 thinking 块耗尽导致 text 块缺失（empty_response）
+        payload = {"model": model_id, "max_tokens": 32, "temperature": 1.0, "top_p": 1.0, "system": system_prompt or "", "messages": [{"role": "user", "content": prompt}], "stream": False, "thinking": {"type": "disabled"}}
         default_path = "/v1/messages"
         headers = {"x-api-key": api_key, "anthropic-version": "2023-06-01"}
     else:
