@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.3](https://github.com/Yachiyo-5i/Attest/compare/v0.1.2...v0.1.3) (2026-09-01)
+
+
+### Bug Fixes
+
+* let per-cell deviations override diluted aggregate verdict ([f489220](https://github.com/Yachiyo-5i/Attest/commit/f489220ea23f3ffd714f3158e9df1270b0c2dd3d))
+
 ## [0.1.2](https://github.com/Yachiyo-5i/Attest/compare/v0.1.1...v0.1.2) (2026-09-01)
 
 
