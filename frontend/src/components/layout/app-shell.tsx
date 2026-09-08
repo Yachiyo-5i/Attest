@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
-import { ChartNoAxesCombined, Database, DatabaseZap, History, LogOut, PanelLeftClose, PanelLeftOpen, RadioTower, TestTube2 } from 'lucide-react'
+import { ChartNoAxesCombined, Database, DatabaseZap, History, LogOut, Menu, PanelLeftClose, PanelLeftOpen, RadioTower, TestTube2, X } from 'lucide-react'
 import { useState, type ReactNode } from 'react'
-import { Link, Navigate, NavLink, Outlet, useNavigate } from 'react-router-dom'
+import { Link, Navigate, NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { api } from '../../lib/api'
 import { cn } from '../../lib/cn'
 import { useProfiles } from '../../hooks/queries'
@@ -40,7 +40,9 @@ export function pageTitle(pathname: string) {
 
 export function AppShell() {
   const [compact, setCompact] = useState(false)
+  const [mobileNavigationOpen, setMobileNavigationOpen] = useState(false)
   const navigate = useNavigate()
+  const location = useLocation()
   const me = useQuery({ queryKey: ['me'], queryFn: () => api('/api/auth/me'), retry: false, staleTime: 60_000 })
   const { data: profiles } = useProfiles(me.isSuccess)
   const readyProfiles = profiles?.filter(p => p.state === 'calibrated' || p.state === 'baseline_ready').length ?? 0
@@ -61,8 +63,8 @@ export function AppShell() {
   }
 
   return (
-    <div className="flex min-h-screen bg-ink-950 p-3">
-      <aside className={cn('sticky top-3 flex h-[calc(100vh-24px)] flex-none flex-col rounded-2xl bg-ink-950 px-3 py-4 text-ink-100 transition-[width]', compact ? 'w-18' : 'w-60')}>
+    <div className="min-h-dvh bg-ink-950 p-0 md:flex md:min-h-screen md:p-3">
+      <aside className={cn('sticky top-3 hidden h-[calc(100vh-24px)] flex-none flex-col rounded-2xl bg-ink-950 px-3 py-4 text-ink-100 transition-[width] md:flex', compact ? 'w-18' : 'w-60')}>
         <div className={cn('flex h-10 items-center gap-2.5 px-2 text-white', compact && 'justify-center px-0')}>
           <img src="/logo.png" alt="Attest" className="size-8 flex-none rounded-lg shadow-lg shadow-accent-600/30" />
           {!compact && (
@@ -118,17 +120,72 @@ export function AppShell() {
           </button>
         </div>
       </aside>
-      <div className="ml-3 min-w-0 flex-1 rounded-2xl bg-canvas">
+      <div className="min-h-dvh min-w-0 flex-1 bg-canvas md:ml-3 md:rounded-2xl">
+        <header className="sticky top-0 z-10 flex h-14 items-center justify-between border-b border-line bg-canvas/95 px-4 backdrop-blur md:hidden">
+          <Link to="/" className="flex min-w-0 items-center gap-2 text-slate-800" aria-label="返回工作台">
+            <img src="/logo.png" alt="" className="size-7 rounded-md" />
+            <strong className="truncate text-sm">{pageTitle(location.pathname)}</strong>
+          </Link>
+          <button
+            type="button"
+            onClick={() => setMobileNavigationOpen(true)}
+            aria-label="打开导航"
+            aria-expanded={mobileNavigationOpen}
+            className="grid size-9 cursor-pointer place-items-center rounded-md text-slate-600 hover:bg-slate-100"
+          >
+            <Menu size={20} />
+          </button>
+        </header>
         <Outlet />
       </div>
+      {mobileNavigationOpen && (
+        <div className="fixed inset-0 z-30 md:hidden" role="dialog" aria-modal="true" aria-label="主导航">
+          <button type="button" className="absolute inset-0 cursor-default bg-ink-950/45" aria-label="关闭导航" onClick={() => setMobileNavigationOpen(false)} />
+          <aside className="relative flex h-full w-[min(18rem,calc(100vw-2.5rem))] flex-col bg-ink-950 px-4 py-5 text-ink-100 shadow-2xl">
+            <div className="flex h-9 items-center gap-2.5 px-1 text-white">
+              <img src="/logo.png" alt="Attest" className="size-8 rounded-lg" />
+              <strong className="text-[17px]">Attest</strong>
+              <button type="button" aria-label="关闭导航" onClick={() => setMobileNavigationOpen(false)} className="ml-auto grid size-8 cursor-pointer place-items-center rounded-md text-ink-300 hover:bg-ink-700 hover:text-white">
+                <X size={18} />
+              </button>
+            </div>
+            <nav className="mt-7 grid gap-6">
+              {navigation.map(group => (
+                <div key={group.group}>
+                  <p className="mb-2 px-2 text-[10px] font-bold tracking-[0.12em] text-ink-400">{group.group}</p>
+                  {group.items.map(item => {
+                    const Icon = item.icon
+                    return (
+                      <NavLink
+                        key={item.path}
+                        to={item.path}
+                        end={item.end}
+                        onClick={() => setMobileNavigationOpen(false)}
+                        className={({ isActive }) => cn('flex h-11 items-center gap-3 rounded-lg px-3 text-sm font-semibold text-ink-200 hover:bg-ink-700/60 hover:text-white', isActive && 'bg-ink-600 text-white')}
+                      >
+                        <Icon size={18} />
+                        <span>{item.label}</span>
+                        {item.path === '/audit' && readyProfiles > 0 && <b className="ml-auto rounded-md bg-accent-500 px-1.5 py-0.5 text-[10px] text-white">{readyProfiles}</b>}
+                      </NavLink>
+                    )
+                  })}
+                </div>
+              ))}
+            </nav>
+            <button onClick={logout} className="mt-auto flex h-10 cursor-pointer items-center gap-2 px-2 text-sm text-ink-200 hover:text-white">
+              <LogOut size={17} />退出登录
+            </button>
+          </aside>
+        </div>
+      )}
     </div>
   )
 }
 
 export function PageContent({ children, title, breadcrumb }: { children: ReactNode; title?: string; breadcrumb?: Array<{ label: string; to?: string }> }) {
   return (
-    <main className="mx-auto max-w-330 px-6 py-8 pb-18 lg:px-10">
-      <div className="mb-6 flex h-8 items-center gap-2 text-[13px]">
+    <main className="mx-auto max-w-330 px-4 py-5 pb-12 sm:px-6 sm:py-7 sm:pb-18 lg:px-10 lg:py-8">
+      <div className="mb-5 flex min-h-6 items-center gap-2 text-[13px] sm:mb-6 sm:h-8">
         {breadcrumb?.length ? (
           <nav className="flex items-center gap-1.5 text-faint">
             {breadcrumb.map((item, index) => (
@@ -153,10 +210,10 @@ export function PageContent({ children, title, breadcrumb }: { children: ReactNo
 
 export function PageHeading({ eyebrow, title, description, action }: { eyebrow: string; title: string; description: string; action?: ReactNode }) {
   return (
-    <div className="mb-8 flex flex-wrap items-start justify-between gap-5">
+    <div className="mb-6 flex flex-wrap items-start justify-between gap-4 sm:mb-8 sm:gap-5">
       <div>
         <p className="mb-2 text-[10px] font-extrabold tracking-[0.14em] text-faint">{eyebrow}</p>
-        <h1 className="mb-2 text-3xl font-semibold tracking-tight text-slate-900">{title}</h1>
+        <h1 className="mb-2 text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl">{title}</h1>
         <p className="m-0 max-w-2xl text-sm leading-relaxed text-muted">{description}</p>
       </div>
       {action}

@@ -28,15 +28,15 @@ export function LoginPage() {
   }
 
   return (
-    <main className="grid min-h-screen lg:grid-cols-[1.15fr_minmax(460px,0.85fr)]">
-      <section className="flex flex-col justify-between bg-ink-900 p-10 text-slate-100 lg:p-20">
+    <main className="grid min-h-dvh lg:min-h-screen lg:grid-cols-[1.15fr_minmax(460px,0.85fr)]">
+      <section className="flex flex-col justify-between bg-ink-900 p-6 text-slate-100 sm:p-10 lg:p-20">
         <div className="flex items-center gap-2.5 text-lg">
           <img src="/logo.png" alt="Attest" className="size-9 rounded-lg shadow-lg shadow-accent-600/30" />
           <strong>Attest</strong>
         </div>
-        <div className="my-16 max-w-xl">
+        <div className="my-12 max-w-xl sm:my-16">
           <p className="mb-2.5 text-[10px] font-extrabold tracking-[0.14em] text-ink-300">PRIVATE MODEL VERIFICATION</p>
-          <h1 className="mb-5 text-4xl leading-tight font-semibold tracking-tight lg:text-5xl">
+          <h1 className="mb-5 text-3xl leading-tight font-semibold tracking-tight sm:text-4xl lg:text-5xl">
             把模型真实性<br />变成可复现的证据。
           </h1>
           <p className="max-w-lg text-base leading-relaxed text-slate-400">
@@ -49,7 +49,7 @@ export function LoginPage() {
           <span className="flex items-center gap-1.5"><Check size={16} className="text-emerald-400" />报告可随时回看复查</span>
         </div>
       </section>
-      <section className="grid place-items-center bg-canvas p-10">
+      <section className="grid place-items-center bg-canvas p-6 sm:p-10">
         <form className="grid w-full max-w-96 gap-5" onSubmit={submit}>
           <div className="mb-3">
             <span className="mb-5 grid size-11 place-items-center rounded-xl bg-accent-100 text-accent-600">

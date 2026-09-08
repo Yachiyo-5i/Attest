@@ -16,7 +16,7 @@ export function Button({ children, onClick, type = 'button', variant = 'primary'
       onClick={onClick}
       disabled={disabled}
       className={cn(
-        'inline-flex h-10 items-center justify-center gap-2 rounded-lg px-4 text-[13px] font-bold transition-colors disabled:cursor-not-allowed disabled:opacity-50',
+        'inline-flex h-10 items-center justify-center gap-2 rounded-lg px-4 text-[13px] font-bold transition-colors disabled:cursor-not-allowed disabled:opacity-50 max-sm:min-h-11',
         variant === 'primary' && 'bg-accent-600 text-white shadow-sm hover:bg-accent-700',
         variant === 'secondary' && 'bg-slate-100 text-slate-700 hover:bg-slate-200',
         variant === 'quiet' && 'bg-transparent text-slate-500 hover:bg-slate-100 hover:text-slate-700',
@@ -71,7 +71,7 @@ export function EmptyState({ icon: Icon, title, description, action }: { icon: L
 
 export function SectionHeader({ eyebrow, title, description, action }: { eyebrow?: string; title: string; description?: string; action?: ReactNode }) {
   return (
-    <div className="mb-5 flex items-start justify-between gap-4">
+    <div className="mb-5 flex flex-wrap items-start justify-between gap-3 sm:gap-4">
       <div>
         {eyebrow && <p className="mb-1 text-[10px] font-extrabold tracking-[0.14em] text-faint">{eyebrow}</p>}
         <h2 className="text-[17px] font-semibold text-slate-800">{title}</h2>
@@ -84,7 +84,7 @@ export function SectionHeader({ eyebrow, title, description, action }: { eyebrow
 
 export function Metric({ label, value, hint, tone = 'default' }: { label: string; value: string | number; hint: string; tone?: 'default' | 'accent' | 'success' }) {
   return (
-    <article className="grid min-h-28 content-between rounded-xl border border-line bg-surface p-5">
+    <article className="grid min-h-28 content-between rounded-xl border border-line bg-surface p-4 sm:p-5">
       <span className="text-xs font-semibold text-muted">{label}</span>
       <strong className={cn('text-3xl tracking-tight text-slate-800', tone === 'success' && 'text-success-600', tone === 'accent' && 'text-accent-600')}>{value}</strong>
       <small className="text-xs text-faint">{hint}</small>
@@ -93,7 +93,7 @@ export function Metric({ label, value, hint, tone = 'default' }: { label: string
 }
 
 export function Surface({ children, className }: { children: ReactNode; className?: string }) {
-  return <section className={cn('rounded-xl border border-line bg-surface p-6', className)}>{children}</section>
+  return <section className={cn('rounded-xl border border-line bg-surface p-4 sm:p-6', className)}>{children}</section>
 }
 
 export function TextAction({ children, onClick }: { children: ReactNode; onClick: () => void }) {
@@ -116,7 +116,7 @@ export function Field({ label, hint, children }: { label: ReactNode; hint?: stri
 }
 
 export const inputClass =
-  'h-11 w-full appearance-none rounded-lg border border-line bg-white px-3 text-[13px] text-slate-800 outline-none transition-shadow focus:border-accent-500 focus:ring-[3px] focus:ring-accent-500/15'
+  'h-11 w-full appearance-none rounded-lg border border-line bg-white px-3 text-[13px] text-slate-800 outline-none transition-shadow focus:border-accent-500 focus:ring-[3px] focus:ring-accent-500/15 max-sm:text-base'
 
 export type SelectOption = { value: string; label: ReactNode }
 export type SelectGroup = { label: string; options: SelectOption[] }
@@ -211,7 +211,7 @@ export function NumberInput({ value, onChange, min = 2, max = 500, step = 5, suf
         max={max}
         value={value}
         onChange={event => clamp(Number(event.target.value))}
-        className="h-10 w-18 border-y border-line bg-white text-center text-[13px] text-slate-700 outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+        className="h-10 w-18 border-y border-line bg-white text-center text-[13px] text-slate-700 outline-none max-sm:text-base [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
       />
       <button type="button" onClick={() => clamp(value + step)} className="h-10 w-9 cursor-pointer rounded-r-lg border border-line bg-white text-slate-600 hover:bg-slate-50">＋</button>
       {suffix && <small className="ml-2.5 text-xs text-muted">{suffix}</small>}

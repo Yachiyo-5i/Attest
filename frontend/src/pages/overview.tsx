@@ -42,7 +42,7 @@ export function OverviewPage() {
         action={<Button onClick={() => navigate('/audit')} disabled={ready === 0}><Plus size={17} />新建检验</Button>}
       />
 
-      <section className="mb-4 flex min-h-20 items-center gap-3 rounded-xl border border-accent-100 bg-accent-50 px-5 py-4">
+      <section className="mb-4 flex min-h-20 items-center gap-3 rounded-xl border border-accent-100 bg-accent-50 px-4 py-4 sm:px-5">
         <div className="grid size-10 place-items-center rounded-lg bg-accent-100 text-accent-600"><Sparkles size={19} /></div>
         <div className="min-w-0">
           <p className="m-0 text-[11px] text-muted">下一步</p>
@@ -54,7 +54,7 @@ export function OverviewPage() {
         </button>
       </section>
 
-      <div className="mb-4 grid grid-cols-3 gap-3.5 max-md:grid-cols-1">
+      <div className="mb-4 grid grid-cols-1 gap-3.5 sm:grid-cols-3">
         <Metric label="可用基线" value={ready} hint={ready ? '可用于检验待测站点' : '完成基线采集后解锁检验'} tone="success" />
         <Metric label="参考网关" value={gateways.length} hint={gateways.length ? '统一管理三种协议' : '尚未配置'} tone="accent" />
         <Metric label="进行中任务" value={activeRuns} hint={activeRuns ? '进度会自动更新' : '当前没有进行中的任务'} />
@@ -65,7 +65,7 @@ export function OverviewPage() {
           <SectionHeader eyebrow="PROFILE COVERAGE" title="基线覆盖" description="每个模型与协议的组合都有独立的参考基线。" action={<TextAction onClick={() => navigate('/profiles')}>管理基线 <ArrowRight size={15} /></TextAction>} />
           <div className="grid gap-4.5">
             {coverage.map(item => (
-              <div className="grid grid-cols-[110px_minmax(60px,1fr)_60px] items-center gap-3" key={item.label}>
+              <div className="grid grid-cols-[minmax(84px,110px)_minmax(40px,1fr)_52px] items-center gap-2 sm:gap-3" key={item.label}>
                 <div className="flex items-center gap-1.5 text-[13px]">
                   <span className={cn('size-2 rounded-full', item.accent)} />
                   <strong className="font-semibold text-slate-700">{item.label}</strong>

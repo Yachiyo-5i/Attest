@@ -49,7 +49,7 @@ function GatewayRow({ gateway }: { gateway: Gateway }) {
         </div>
       </div>
       {confirming ? (
-        <span className="flex flex-none items-center gap-1.5">
+        <span className="flex flex-none items-center gap-1.5 max-sm:flex-wrap max-sm:justify-end">
           <button
             onClick={async () => { await deleteGateway.mutateAsync(gateway.id) }}
             className="cursor-pointer rounded-md bg-danger-700 px-2.5 py-1.5 text-[11px] font-bold text-white hover:bg-red-800"

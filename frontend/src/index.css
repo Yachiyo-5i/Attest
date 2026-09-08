@@ -45,6 +45,18 @@
 
 body {
   @apply bg-canvas text-body antialiased;
+  min-width: 320px;
+  overflow-x: hidden;
+}
+
+#root {
+  min-height: 100dvh;
+}
+
+@media (max-width: 767px) {
+  body {
+    background: var(--color-canvas);
+  }
 }
 
 /* 全局隐藏滚动条（滚动功能保留），避免滚动条出现/消失导致内容位移 */

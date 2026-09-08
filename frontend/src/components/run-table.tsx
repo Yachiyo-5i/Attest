@@ -58,7 +58,7 @@ export function RunTable({ runs, onCreate, limit = 8 }: { runs: Run[]; onCreate:
           <article
             key={run.id}
             onClick={() => navigate(`/runs/${run.id}`)}
-            className="grid cursor-pointer grid-cols-[minmax(0,1.6fr)_110px_110px_minmax(0,0.9fr)_36px] items-center gap-4 border-b border-line-soft py-3.5 transition-colors last:border-0 hover:bg-slate-50 max-md:grid-cols-[minmax(0,1fr)_auto]"
+            className="grid cursor-pointer grid-cols-[minmax(0,1.6fr)_110px_110px_minmax(0,0.9fr)_36px] items-center gap-4 border-b border-line-soft py-3.5 transition-colors last:border-0 hover:bg-slate-50 max-md:grid-cols-[minmax(0,1fr)_auto_auto] max-md:gap-2"
           >
             <div className="flex min-w-0 items-center gap-2.5">
               <RunSymbol kind={run.kind} />

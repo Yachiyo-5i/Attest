@@ -38,18 +38,18 @@ export function RunsPage() {
   return (
     <PageContent title="检验记录">
       <PageHeading eyebrow="RUN HISTORY" title="检验记录" description="全部基线采集与真实性检验任务；点击任意一行查看完整报告。" />
-      <div className="mb-4 flex flex-wrap gap-2">
+      <div className="mb-4 flex flex-wrap gap-2 overflow-x-auto pb-1">
         {[
           { current: kind, setter: setKind, options: kindFilters },
           { current: status, setter: setStatus, options: statusFilters },
         ].map((group, groupIndex) => (
-          <div key={groupIndex} className="flex rounded-lg border border-line bg-surface p-1">
+          <div key={groupIndex} className="flex flex-none rounded-lg border border-line bg-surface p-1">
             {group.options.map(option => (
               <button
                 key={option.value}
                 onClick={() => group.setter(option.value as never)}
                 className={cn(
-                  'cursor-pointer rounded-md px-3 py-1.5 text-xs font-semibold text-muted hover:text-slate-700',
+                  'cursor-pointer whitespace-nowrap rounded-md px-3 py-1.5 text-xs font-semibold text-muted hover:text-slate-700',
                   group.current === option.value && 'bg-accent-600 text-white hover:text-white',
                 )}
               >
@@ -73,7 +73,7 @@ export function RunsPage() {
               <article
                 key={run.id}
                 onClick={() => navigate(`/runs/${run.id}`)}
-                className="grid cursor-pointer grid-cols-[minmax(0,1.7fr)_110px_130px_minmax(0,0.9fr)_36px] items-center gap-4 border-b border-line-soft py-3.5 transition-colors last:border-0 hover:bg-slate-50 max-md:grid-cols-[minmax(0,1fr)_auto]"
+                className="grid cursor-pointer grid-cols-[minmax(0,1.7fr)_110px_130px_minmax(0,0.9fr)_36px] items-center gap-4 border-b border-line-soft py-3.5 transition-colors last:border-0 hover:bg-slate-50 max-md:grid-cols-[minmax(0,1fr)_auto_auto] max-md:gap-2"
               >
                 <div className="flex min-w-0 items-center gap-2.5">
                   <RunSymbol kind={run.kind} />

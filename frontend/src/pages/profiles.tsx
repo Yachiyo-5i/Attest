@@ -72,7 +72,7 @@ function ProfileRow({ profile, displayName, expanded, onToggle, onRecollect }: {
   const missing = profile.quality?.missing_cells?.length ?? 0
   return (
     <article className="border-t border-line-soft py-4 first:border-0 first:pt-0">
-      <div className="grid cursor-pointer grid-cols-[minmax(0,1.4fr)_130px_110px_130px_auto] items-center gap-4 max-md:grid-cols-[minmax(0,1fr)_auto]" onClick={onToggle}>
+      <div className="grid cursor-pointer grid-cols-[minmax(0,1.4fr)_130px_110px_130px_auto] items-center gap-4 max-md:grid-cols-[minmax(0,1fr)_auto] max-md:gap-2" onClick={onToggle}>
         <div className="min-w-0">
           <strong className="block text-[13px] text-slate-800">{displayName}</strong>
           <small className="mt-0.5 block truncate font-mono text-[11px] text-faint">{profile.id}</small>

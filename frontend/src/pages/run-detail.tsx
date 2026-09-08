@@ -64,7 +64,7 @@ export function RunDetailPage() {
           </h1>
           <p className="m-0 mt-1 truncate text-xs text-faint">{pageSubtitle}</p>
         </div>
-        <span className="ml-auto flex items-center gap-2">
+        <span className="ml-auto flex items-center gap-2 max-sm:w-full max-sm:justify-end">
           <StatusPill status={run.status} />
           <RunActions run={run} onDeleted={() => navigate('/runs')} />
         </span>
@@ -113,8 +113,8 @@ function VerdictBanner({ report }: { report: Report }) {
     ? auditNarrative(decision.status, comparison, CELL_LABELS, threshold?.match_threshold ?? 0.1, threshold?.mismatch_threshold ?? 0.22)
     : null
   return (
-    <section className={cn('rounded-xl border p-6', config.banner)}>
-      <div className="flex items-start gap-4">
+    <section className={cn('rounded-xl border p-4 sm:p-6', config.banner)}>
+      <div className="flex items-start gap-3 sm:gap-4">
         <span className={cn('grid size-11 flex-none place-items-center rounded-xl', config.iconColor)}>
           <Icon size={22} />
         </span>
@@ -185,7 +185,7 @@ function ProgressSection({ report, totalPlanned }: { report: Report; totalPlanne
           const planned = totalPlanned ? totalPlanned / BATTERY_CELL_COUNT : 0
           const cellPct = planned ? Math.min(100, Math.round((cell.attempted / planned) * 100)) : 0
           return (
-            <div key={cell.cell_id} className="grid grid-cols-[130px_minmax(0,1fr)_74px] items-center gap-3">
+            <div key={cell.cell_id} className="grid grid-cols-[minmax(92px,130px)_minmax(0,1fr)_58px] items-center gap-2 sm:grid-cols-[130px_minmax(0,1fr)_74px] sm:gap-3">
               <span className="truncate text-xs font-semibold text-slate-600">{cellLabel(cell.cell_id)}</span>
               <div className="h-1.5 overflow-hidden rounded-full bg-slate-100">
                 <div className="h-full rounded-full bg-accent-400 transition-[width] duration-500" style={{ width: `${cellPct}%` }} />
@@ -315,7 +315,7 @@ function EnrollmentCells({ report }: { report: Report }) {
       />
       <div className="grid gap-5">
         {evidence.cells.map(cell => (
-          <article key={cell.cell_id} className="rounded-xl border border-line-soft p-5">
+          <article key={cell.cell_id} className="rounded-xl border border-line-soft p-4 sm:p-5">
             <div className="mb-3 flex flex-wrap items-center gap-2.5">
               <strong className="text-sm text-slate-800">{cellLabel(cell.cell_id)}</strong>
               <span className="ml-auto text-[11px] text-faint">
