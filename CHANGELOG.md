@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.1.4](https://github.com/Yachiyo-5i/Attest/compare/v0.1.3...v0.1.4) (2026-09-08)
+
+
+### Features
+
+* support custom model catalog entries ([d1cb170](https://github.com/Yachiyo-5i/Attest/commit/d1cb1708f68aee3c4017e0a525e5c14f3b9d9ab3))
+
+
+### Bug Fixes
+
+* **frontend:** improve mobile responsive layout ([d037c49](https://github.com/Yachiyo-5i/Attest/commit/d037c4985e9a41065db09d80ed95a834f55dca3b))
+
 ## [0.1.3](https://github.com/Yachiyo-5i/Attest/compare/v0.1.2...v0.1.3) (2026-09-01)
 
 
