@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import { ChartNoAxesCombined, Database, DatabaseZap, History, LogOut, Menu, PanelLeftClose, PanelLeftOpen, RadioTower, TestTube2, X } from 'lucide-react'
+import { Boxes, ChartNoAxesCombined, Database, DatabaseZap, History, LogOut, Menu, PanelLeftClose, PanelLeftOpen, RadioTower, TestTube2, X } from 'lucide-react'
 import { useState, type ReactNode } from 'react'
 import { Link, Navigate, NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { api } from '../../lib/api'
@@ -19,6 +19,7 @@ const navigation = [
     group: '配置',
     items: [
       { path: '/gateway', label: '参考网关', icon: RadioTower },
+      { path: '/models', label: '模型目录', icon: Boxes },
       { path: '/enroll', label: '基线采集', icon: DatabaseZap },
       { path: '/profiles', label: '基线管理', icon: Database },
     ],
@@ -30,6 +31,7 @@ const titles: Record<string, string> = {
   '/audit': '新建检验',
   '/runs': '检验记录',
   '/gateway': '参考网关',
+  '/models': '模型目录',
   '/enroll': '基线采集',
   '/profiles': '基线管理',
 }

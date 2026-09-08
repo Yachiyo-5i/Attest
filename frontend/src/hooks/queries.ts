@@ -6,6 +6,23 @@ export function useModels(enabled = true) {
   return useQuery({ queryKey: ['models'], queryFn: () => api<Model[]>('/api/models'), staleTime: 5 * 60_000, enabled })
 }
 
+export function useCreateModel() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (payload: { provider: string; model_name: string; protocols: Protocol[] }) =>
+      api<Model>('/api/models', { method: 'POST', body: JSON.stringify(payload) }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['models'] }),
+  })
+}
+
+export function useDeleteModel() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (id: string) => api<{ deleted: string }>(`/api/models/${encodeURIComponent(id)}`, { method: 'DELETE' }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['models'] }),
+  })
+}
+
 export function useGateways(enabled = true) {
   return useQuery({ queryKey: ['gateways'], queryFn: () => api<Gateway[]>('/api/gateways'), staleTime: 30_000, enabled })
 }

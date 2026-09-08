@@ -11,7 +11,7 @@ from fastapi.responses import FileResponse, JSONResponse
 from pydantic import BaseModel, Field, HttpUrl
 
 from .auth import create_session, delete_session, require_session, verify_password
-from .catalog import MODEL_CATALOG, get_model
+from .catalog import add_model, delete_model, get_model, list_models
 from .config import settings
 from .storage import init_db, json_dumps, json_loads, session, utc_now
 from .storage.models import GatewayConnection as GatewayRow, Profile as ProfileRow, Run as RunRow, Sample as SampleRow
@@ -35,6 +35,12 @@ class GatewayRequest(BaseModel):
     base_url: HttpUrl
     api_key: str = Field(min_length=1, max_length=512)
     routes: dict[str, dict[str, str]] = Field(default_factory=dict)
+
+
+class ModelRequest(BaseModel):
+    provider: str = Field(min_length=1, max_length=80)
+    model_name: str = Field(min_length=1, max_length=200)
+    protocols: list[str] = Field(min_length=1, max_length=3)
 
 
 class EnrollmentRequest(BaseModel):
@@ -82,7 +88,28 @@ async def me(_: str = Depends(require_session)) -> dict:
 
 @app.get("/api/models")
 async def models(_: str = Depends(require_session)) -> list[dict]:
-    return MODEL_CATALOG
+    return list_models()
+
+
+@app.post("/api/models")
+async def create_model(payload: ModelRequest, _: str = Depends(require_session)) -> dict:
+    allowed_protocols = {"openai_responses", "openai_chat_completions", "anthropic_messages"}
+    protocols = list(dict.fromkeys(payload.protocols))
+    if any(protocol not in allowed_protocols for protocol in protocols):
+        raise HTTPException(status_code=400, detail="unsupported protocol")
+    try:
+        return add_model(payload.provider, payload.model_name, protocols)
+    except ValueError as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
+
+
+@app.delete("/api/models/{model_id:path}")
+async def remove_model(model_id: str, _: str = Depends(require_session)) -> dict:
+    try:
+        delete_model(model_id)
+    except KeyError as exc:
+        raise HTTPException(status_code=404, detail="custom model not found") from exc
+    return {"deleted": model_id}
 
 
 def _gateway_to_dict(row: GatewayRow) -> dict:

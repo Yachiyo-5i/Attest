@@ -22,6 +22,25 @@ def test_auth_boundary():
         assert client.get("/api/models").status_code == 401
 
 
+def test_custom_model_catalog_lifecycle():
+    with TestClient(app) as client:
+        client.post("/api/auth/login", json={"password": "dev-password"})
+        response = client.post(
+            "/api/models",
+            json={"provider": "test-company", "model_name": "test-model-v1", "protocols": ["openai_chat_completions"]},
+        )
+        assert response.status_code == 200
+        model = response.json()
+        assert model["id"] == "test-company.test-model-v1"
+        assert model["display_name"] == "Test Model V1"
+        assert model["custom"] is True
+        assert client.post(
+            "/api/models",
+            json={"provider": "test-company", "model_name": "test-model-v1", "protocols": ["openai_chat_completions"]},
+        ).status_code == 409
+        assert client.delete(f"/api/models/{model['id']}").status_code == 200
+
+
 def test_audit_accepts_url_payload_and_queues_run(monkeypatch):
     def discard_background_task(coro):
         coro.close()

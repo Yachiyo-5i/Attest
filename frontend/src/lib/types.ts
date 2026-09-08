@@ -6,6 +6,7 @@ export type Model = {
   display_name: string
   api_model_id: string
   protocols: Protocol[]
+  custom?: boolean
 }
 
 export type Gateway = {

@@ -8,6 +8,7 @@ import { GatewayPage } from '../pages/gateway'
 import { EnrollPage } from '../pages/enroll'
 import { AuditPage } from '../pages/audit'
 import { RunsPage } from '../pages/runs'
+import { ModelsPage } from '../pages/models'
 
 // 图表页按需加载，把 recharts 拆出主包
 const RunDetailPage = lazy(() => import('../pages/run-detail').then(m => ({ default: m.RunDetailPage })))
@@ -38,6 +39,7 @@ export const router = createBrowserRouter([
     children: [
       { index: true, element: <OverviewPage /> },
       { path: 'gateway', element: <GatewayPage /> },
+      { path: 'models', element: <ModelsPage /> },
       { path: 'enroll', element: <EnrollPage /> },
       { path: 'audit', element: <AuditPage /> },
       { path: 'profiles', element: <Suspense fallback={lazyFallback}><ProfilesPage /></Suspense> },
